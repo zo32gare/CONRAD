@@ -7,6 +7,7 @@ import edu.stanford.rsl.conrad.data.numeric.Grid3D;
 import edu.stanford.rsl.conrad.data.numeric.MultiChannelGrid2D;
 import edu.stanford.rsl.conrad.fitting.Function;
 import edu.stanford.rsl.conrad.fitting.LinearFunction;
+import edu.stanford.rsl.conrad.geometry.General;
 import edu.stanford.rsl.conrad.geometry.shapes.simple.PointND;
 import edu.stanford.rsl.conrad.geometry.splines.BSpline;
 import ij.ImageJ;
@@ -15,6 +16,7 @@ import ij.ImageStack;
 import ij.gui.Line;
 import ij.gui.Overlay;
 import ij.gui.Plot;
+import ij.measure.Calibration;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 
@@ -139,8 +141,22 @@ public abstract class VisualizationUtil {
 			imp.setStack(title, stack);
 			imp.show();	
 			return imp;
+		} else {
+			// note: changed, so that ImageJ shows world coordinates
+			System.out.println("Warning! VisualizationUtil.showGrid2D: this method was changed!!");
+			ImagePlus imp = new ImagePlus();
+			ImageStack stack = new ImageStack(grid.getWidth(),grid.getHeight());
+			stack.addSlice("",ImageUtil.wrapGrid2D(grid));
+			imp.setStack(title, stack);
+			Calibration calibration = imp.getCalibration();
+			calibration.xOrigin = grid.getOrigin()[0];
+			calibration.yOrigin = grid.getOrigin()[1];
+			calibration.pixelWidth = grid.getSpacing()[0];
+			calibration.pixelHeight = grid.getSpacing()[1];
+			imp.show();	
+			return imp;
 		}
-		return showImageProcessor(ImageUtil.wrapGrid2D(grid), title);
+		//return showImageProcessor(ImageUtil.wrapGrid2D(grid), title);
 	}
 	
 	public static ImagePlus showImageProcessor(ImageProcessor image, String title){
