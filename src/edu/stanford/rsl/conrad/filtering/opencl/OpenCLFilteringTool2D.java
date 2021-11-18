@@ -51,7 +51,16 @@ import edu.stanford.rsl.conrad.utils.UserUtil;
 		public enum kernelname{
 			KERNEL3x3_FILTER_2D("kernel3x3Filter2D.cl"),
 			MEAN_FILTER_2D("meanFilter2D.cl"),
-			BINARIZATION_2D("binarization2D.cl");
+			MEAN_FILTER_2D_IGNORE("meanFilter2Dignore.cl"),
+			BINARIZATION_2D("binarization2D.cl"),
+			MEDIAN_FILTER_2D_3x3("medianFilter2D3x3.cl"),
+			MEDIAN_FILTER_2D_3x3_IGNORE("medianFilter2D3x3ignore.cl"),
+			MEDIAN_FILTER_2D_7x3("medianFilter2D7x3.cl"),
+			MEDIAN_FILTER_2D_7x3_IGNORE("medianFilter2D7x3ignore.cl"),
+			GAUSS_FILTER_2D("gaussFilter2D.cl"),
+			GAUSS_FILTER_2D_IGNORE("gaussFilter2Dignore.cl"),
+			GAUSS_FILTER_ANISOTROPIC_2D_IGNORE("gaussAnisotropicFilter2Dignore.cl"),
+			BILATERAL_FILTER_2D_IGNORE("bilateralFilter2Dignore.cl");
 			
 			private String filename;
 			
