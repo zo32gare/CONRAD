@@ -11,7 +11,7 @@
 	<classpathentry kind="lib" path="lib/gluegen-rt-natives-windows-i586.jar"/>
 	<classpathentry kind="lib" path="lib/gluegen-rt.jar"/>
 	<classpathentry kind="lib" path="lib/hough-0.1.jar"/>
-	<classpathentry kind="lib" path="lib/ij.jar" sourcepath="lib/ij149v-src.zip"/>
+	<classpathentry kind="lib" path="lib/ij.jar"/>
 	<classpathentry kind="lib" path="lib/ImageJ_SURF_2009-12-01_08.19.jar"/>
 	<classpathentry kind="lib" path="lib/Jama-1.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/jcublas-0.3.0a.jar"/>
@@ -69,5 +69,6 @@
 	<classpathentry kind="lib" path="lib/jpop.0.7.5.jar"/>
 	<classpathentry kind="lib" path="lib/fastica-1.11.jar" sourcepath="lib/fastica-1.11-src.zip"/>
 	<classpathentry kind="lib" path="lib/sis-jhdf5-batteries_included.jar"/>
+	<classpathentry kind="lib" path="D:/Reconstruction/CONRAD/lib/imagej-itk-0.1.0.jar"/>
 	<classpathentry kind="output" path="src"/>
 </classpath>
