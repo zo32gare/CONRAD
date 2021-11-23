@@ -162,6 +162,10 @@ public class PolychromaticDetectorLDR extends XRayDetector{
 			value = bin(value, dynamicRange, IMax);
 			value /= I0;
 			break;
+		case NONE:
+			value = bin(value, dynamicRange, IMax);
+			value /= I0;
+			break;
 		default:
 			break;
 		};
@@ -198,8 +202,8 @@ public class PolychromaticDetectorLDR extends XRayDetector{
 			binNr = Math.floor((value * nrBins)/maximum) + 1;
 		}
 		
-		// overexposure
-//		if (binNr >= nrBins) binNr = nrBins-1;
+		// ?? overexposure
+		// if (binNr >= nrBins) binNr = nrBins-1;
 		
 		return binNr* binWidth;
 	
