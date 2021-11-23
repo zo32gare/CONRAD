@@ -78,15 +78,15 @@ public class VICONMarkerMotionField extends SimpleMotionField {
 	@Override
 	public PointND getPosition(PointND initialPosition, double initialTime, double time) {		
 		
-		boolean fKneeGapElimination = true; // want to eliminate the gap between the knee??
+		boolean fKneeGapElimination = false; // want to eliminate the gap between the knee??
 		double kneeGapEliWeightKnee 	= 0.71;		// for Subj5, Static60 = 0.67
 		double kneeGapEliWeightAnkle 	= 0.74;		// for Subj5, Static60 = 0.70
 		
 		double projections = Configuration.getGlobalConfiguration().getGeometry().getNumProjectionMatrices();
-		double viconSamplingRate = Double.parseDouble(Configuration.getGlobalConfiguration().getRegistryEntry(RegKeys.VICON_SAMPLING_RATE));	// 60Hz
-		double viconSkip = Double.parseDouble(Configuration.getGlobalConfiguration().getRegistryEntry(RegKeys.VICON_SKIP_SAMPLES)); // subj5, static60=200
+		double viconSamplingRate = 120;//Double.parseDouble(Configuration.getGlobalConfiguration().getRegistryEntry(RegKeys.VICON_SAMPLING_RATE));	// 60Hz
+		double viconSkip = 120;//Double.parseDouble(Configuration.getGlobalConfiguration().getRegistryEntry(RegKeys.VICON_SKIP_SAMPLES)); // subj5, static60=200
 		// get 248 views for 8 seconds -> 248/8 = 31 Hz (For 400 views, 47.75??)
-		double projectionSamplingRate = Double.parseDouble(Configuration.getGlobalConfiguration().getRegistryEntry(RegKeys.PROJECTION_SAMPLING_RATE));
+		double projectionSamplingRate = 31;//Double.parseDouble(Configuration.getGlobalConfiguration().getRegistryEntry(RegKeys.PROJECTION_SAMPLING_RATE));
 		
 		if (staticScene){
 			double currTime = ((double)refProjection+1.0)/(double)projections;
@@ -106,11 +106,11 @@ public class VICONMarkerMotionField extends SimpleMotionField {
 		PointND p2 = null;
 		
 		// for subj 5, squat 60
-//		double leftAxialRotDeg = -80.0;
-//		double rightAxialRotDeg = -95.0;
-		// for subj 2, squat 60
-		double leftAxialRotDeg = -85.0;
-		double rightAxialRotDeg = -90.0;
+		double leftAxialRotDeg = -80.0;
+		double rightAxialRotDeg = -95.0;
+//		// for subj 2, squat 60
+//		double leftAxialRotDeg = -85.0;
+//		double rightAxialRotDeg = -90.0;
 		
 		// temporary points
 		PointND leftPts = new PointND();

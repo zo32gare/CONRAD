@@ -49,15 +49,15 @@ public class OpenCLProjectionPhantomRenderer extends StreamingPhantomRenderer {
 	protected Trajectory trajectory = Configuration.getGlobalConfiguration().getGeometry();
 
 	private CLContext clContext;
-	
+
 	protected OpenCLAppendBufferRenderer renderer; // better use parent class OpenCLRenderer?
 	protected CLBuffer<FloatBuffer> screenBuffer;
 	protected CLBuffer<FloatBuffer> mu;
 	protected CLBuffer<IntBuffer> priorities;
 	protected ArrayList<OpenCLEvaluatable> clEvaluatables = new ArrayList<OpenCLEvaluatable>();
 	protected CLBuffer<FloatBuffer> outputBuffer;
-	private int elementCountU = 100;
-	private int elementCountV = 100;
+	private int elementCountU = 300;
+	private int elementCountV = 300;
 	private int elementCountT = 1;
 
 	@Override
@@ -80,32 +80,13 @@ public class OpenCLProjectionPhantomRenderer extends StreamingPhantomRenderer {
 			if (phantom instanceof AnalyticPhantom4D) {
 				sampleTime = ((AnalyticPhantom4D) phantom).getTimeWarper().warpTime(sampleTime);
 			}
-			if (phantom instanceof MovingBallPhantom){
-				clEvaluatables.clear();
-				PrioritizableScene scene = ((MovingBallPhantom) phantom).getScene(sampleTime);
-				Translation centerTranslation = phantom.computeCenterTranslation();
-				// apply heart translation to heart parts.
-				for (PhysicalObject o:scene) {
-					applyCenterTranslation(centerTranslation, o);
-					OpenCLEvaluatable os = OpenCLUtil.getOpenCLEvaluatableSubclass(o.getShape(), renderer.device);		
-					clEvaluatables.add(os);
-				}
-			}
-			if (phantom instanceof CombinedBreathingHeartScene){
-				double heartTime = (float) ((CombinedBreathingHeartScene) phantom).getHeart().getTimeWarper().warpTime(sampleTime);
-				samplingPointsVariantsHeart = generateTimeSamplingPoints((float) heartTime);
-				sampleTime = ((CombinedBreathingHeartScene) phantom).getBreathing().getTimeWarper().warpTime(sampleTime);
-				diaphragmMotion =((CombinedBreathingHeartScene) phantom).getBreathing().getDiaphragmMotionVector(0, sampleTime);
-			}
 			samplingPointsVariants = generateTimeSamplingPoints((float)sampleTime);
 
 			long time = System.nanoTime();
 			for (int ID = 0; ID < clEvaluatables.size(); ID++){
-			//for (int ID = 4; ID < 5; ID++){
-					
-			OpenCLEvaluatable os = clEvaluatables.get(ID);
-				// create spline points
 
+				OpenCLEvaluatable os = clEvaluatables.get(ID);
+				// create spline points
 
 				// project points
 				if (phantom instanceof CombinedBreathingHeartScene){
@@ -140,7 +121,7 @@ public class OpenCLProjectionPhantomRenderer extends StreamingPhantomRenderer {
 					s.evaluate(samplingPoints, outputBuffer);
 					//renderer.debugOut(outputBuffer);
 					renderer.project(outputBuffer);
-				
+
 				}else {
 					if (os.isTimeVariant()){
 						os.evaluate(samplingPointsVariants, outputBuffer);
@@ -237,13 +218,13 @@ public class OpenCLProjectionPhantomRenderer extends StreamingPhantomRenderer {
 			o.getShape().applyTransform(translationToRotationCenter);
 		}		
 	}
-	
+
 
 
 	public void configure(AnalyticPhantom phantom, CLContext context, CLDevice device, boolean createMus){
 		this.phantom = phantom;
 		this.clContext = context;
-		
+
 		buffer = new ImageGridBuffer();
 		projectionNumber = -1;
 		dimx = Configuration.getGlobalConfiguration().getGeometry().getDetectorWidth();
@@ -265,13 +246,7 @@ public class OpenCLProjectionPhantomRenderer extends StreamingPhantomRenderer {
 		priorities = context.createIntBuffer(phantom.size() +1, Mem.READ_ONLY);
 		priorities.getBuffer().put(0);
 		for (PhysicalObject o: phantom){
-			if(phantom instanceof CONRADCardiacModel3D){
-				int prio = priorities.getBuffer().position();
-				priorities.getBuffer().put(prio);
-				//System.out.println("Priority is: " + prio);
-			}else{
-				priorities.getBuffer().put(phantom.getPriority(o));
-			}
+			priorities.getBuffer().put(phantom.getPriority(o));
 		}
 		priorities.getBuffer().rewind();
 		device.createCommandQueue().putWriteBuffer(priorities, false).finish().release();
@@ -281,31 +256,18 @@ public class OpenCLProjectionPhantomRenderer extends StreamingPhantomRenderer {
 		if (disableAutoCenterBoolean != null){
 			disableAutoCenter = Boolean.parseBoolean(disableAutoCenterBoolean);
 		}
-		
+
 		Translation centerTranslation = new Translation(new SimpleVector(0,0,0));
 		if (!disableAutoCenter){
 			SimpleVector center = SimpleOperators.add(phantom.getMax().getAbstractVector(), phantom.getMin().getAbstractVector()).dividedBy(2);
 			centerTranslation = new Translation(center.negated());
 		}
-		
+
 		for (PhysicalObject o: phantom) {
 			applyCenterTranslation(centerTranslation, o);
 			AbstractShape s = o.getShape();
-			if (phantom instanceof CombinedBreathingHeartScene) {
-				CombinedBreathingHeartScene combi = (CombinedBreathingHeartScene) phantom;
-				if (combi.getHeart().getVariants().contains(s)) {
-					// apply heart translation to heart parts.
-					s.applyTransform(combi.getHeartTranslation());
-					OpenCLEvaluatable os = OpenCLUtil.getOpenCLEvaluatableSubclass(s, renderer.device);		
-					clEvaluatables.add(os);
-				} else {
-					OpenCLEvaluatable os = OpenCLUtil.getOpenCLEvaluatableSubclass(s, renderer.device);		
-					clEvaluatables.add(os);
-				}
-			} else {
-				OpenCLEvaluatable os = OpenCLUtil.getOpenCLEvaluatableSubclass(s, renderer.device);
-				clEvaluatables.add(os);				
-			}
+			OpenCLEvaluatable os = OpenCLUtil.getOpenCLEvaluatableSubclass(s, renderer.device);
+			clEvaluatables.add(os);				
 		}
 
 		if (createMus) generateMuMap(context, device);

@@ -39,20 +39,20 @@ public class DynamicSquatScene extends WholeBodyScene {
 	private ViconMarkerBuilder viconBuilder;
 
 	boolean writeGroundTruthToFile = true;
-	
+
 	boolean buildStaticWithRef = false;
-	
+
 	boolean selectDefaultVICONMotion = true;
-	
+
 	int refProjection = 0;
-	
+
 	boolean takeOnlyOneLeg = false;
-	
-	static final int subjectNumber = 2;
-	
+
+	static final int subjectNumber = 5;
+
 	public DynamicSquatScene (){	
 	}	
-	
+
 	static final HashMap<Integer, SimpleVector> staticPhantomCenteringTranslations = initPhantomCenteringTranslations();
 
 	private final static HashMap<Integer, SimpleVector> initPhantomCenteringTranslations(){
@@ -65,21 +65,21 @@ public class DynamicSquatScene extends WholeBodyScene {
 		map.put(5, new SimpleVector(114.9026, -31.9343, -128.5811));
 		return map;
 	}
-	
+
 	@Override
 	public void configure(){
-		
+
 		// parameters for (possible) artificial motion field
 		double lengthLowerLeft = 433.976;
 		double lengthLowerRight = 434.196;
 		double lengthUpperLeft = 443.947;
 		double lengthUpperRight = 443.174;
 		double numberOfSquats = 4;
-					
+
 		// Here we use the medical knee flexion angle (in degrees).
 		double angleMin = 60;
 		double angleMax = 90;
-		
+
 		try {
 			buildStaticWithRef = UserUtil.queryBoolean("Build static version with reference frame?");
 			if(buildStaticWithRef)
@@ -101,11 +101,11 @@ public class DynamicSquatScene extends WholeBodyScene {
 			lengthUpperLeft = 443.947;
 			lengthUpperRight = 443.174;
 			numberOfSquats = 4;
-			
+
 			// Here we use the medical knee flexion angle (in degrees).
 			angleMin = 60;
 			angleMax = 90;
-			
+
 			try {
 				numberOfSquats = UserUtil.queryDouble("Please select the number of squats during acquisition time.", numberOfSquats);
 				angleMin = UserUtil.queryDouble("Please select the smallest knee flexion angle in degrees.", angleMin);
@@ -224,19 +224,21 @@ public class DynamicSquatScene extends WholeBodyScene {
 					VICONMotion.setTimeWarper(warper);											
 					// ?? time =0, data not inserted, thus numberOfBSplineTimePoints+1
 					variants.add(new NearestNeighborTimeVariantSurfaceBSpline(splines.get(i), VICONMotion, numberOfBSplineTimePoints+1, false));
-					System.out.println("Creating affine-time-variant spline for " + splines.get(i).getTitle());				
+					System.out.println("Creating affine-time-variant spline for " + splines.get(i).getTitle());	
+					System.out.println("spline:  min = " + splines.get(i).getMin()  + " max = " + splines.get(i).getMax());
+					System.out.println("variant: min = " + variants.get(variants.size()-1).getMin() + " max = " + variants.get(variants.size()-1).getMax());
 				} else {
 					// creation of artificial motion field
 					artificialMotion = new ArtificialMotionField(transformPart,
 							splines.get(i).getTitle(), lengthLowerLeft, lengthLowerRight,
 							lengthUpperLeft, lengthUpperRight, numberOfSquats, angleMin, angleMax); 
 					artificialMotion.setTimeWarper(warper);
-					
+
 					// passing artificial motion field to time variant splines
 					variants.add(new NearestNeighborTimeVariantSurfaceBSpline(splines.get(i),
 							artificialMotion, numberOfBSplineTimePoints + 1, false));
 					System.out.println("Creating affine-time-variant spline for " + splines.get(i).getTitle());
-				}
+					}
 			} else {	
 			}
 			splines.remove(i);
@@ -253,16 +255,16 @@ public class DynamicSquatScene extends WholeBodyScene {
 
 		min = new PointND(Double.MAX_VALUE, Double.MIN_VALUE, Double.MAX_VALUE);
 		max = new PointND(-Double.MAX_VALUE, -Double.MIN_VALUE, -Double.MAX_VALUE);
-		
+
 		createPhysicalObjects();
 
 		min = new PointND(Double.MAX_VALUE, Double.MIN_VALUE, Double.MAX_VALUE);
 		max = new PointND(-Double.MAX_VALUE, -Double.MIN_VALUE, -Double.MAX_VALUE);
 		for (TimeVariantSurfaceBSpline spline: variants){
-				min.updateIfLower(spline.getMin());
-				max.updateIfHigher(spline.getMax());
+			min.updateIfLower(spline.getMin());
+			max.updateIfHigher(spline.getMax());
 		}
-		
+
 		// For rendering we only consider the reference time and extract the scene bound of that specific time frame
 		PointND minSceneBound = new PointND(Double.MAX_VALUE, Double.MIN_VALUE, Double.MAX_VALUE);
 		PointND maxSceneBound = new PointND(-Double.MAX_VALUE, -Double.MIN_VALUE, -Double.MAX_VALUE);
@@ -272,18 +274,18 @@ public class DynamicSquatScene extends WholeBodyScene {
 				maxSceneBound.updateIfHigher(pts);
 			}
 		}
-		
+
 		SimpleVector dynamicCenterTranslation = SimpleOperators.add(minSceneBound.getAbstractVector(), maxSceneBound.getAbstractVector()).dividedBy(2).negated();
 		Translation dct = new Translation(dynamicCenterTranslation);
 		Translation staticTranslation = new Translation(staticPhantomCenteringTranslations.get(subjectNumber));
-		
+
 		Iterator<PhysicalObject> it = this.iterator();
 		while (it.hasNext()) {
 			PhysicalObject spline = it.next();
 			spline.applyTransform(dct);
 			spline.applyTransform(staticTranslation);
 		}
-		
+
 		if (writeGroundTruthToFile){
 			// dynamic transforms
 			SimpleMatrix dynamicCenterTransform = SimpleMatrix.I_4.clone();

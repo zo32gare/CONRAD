@@ -27,8 +27,8 @@ public class ViconMarkerBuilder implements Serializable  {
 	private static File fileMarkers;
 	
 	private static String measurementMode = "Static60"; // Static40, Dynamic, Static60
-	//private static String subject = "Subject 5"; // The smallest;	
-	private static String subject = "Subject 2"; // The biggest;
+	private static String subject = "Subject 5"; // The smallest;	
+//	private static String subject = "Subject 2"; // The biggest;
 	
 	// column number for each item
 	private static int colNoLKneeAngleX, colNoRKneeAngleX, 
@@ -56,9 +56,10 @@ public class ViconMarkerBuilder implements Serializable  {
 		ArrayList<Double> myCurrentRow;
 
 		try {
-			XCatDirectory = Configuration.getGlobalConfiguration().getRegistryEntry(RegKeys.XCAT_PATH);
-			//XCatDirectory = "D:\\Data\\WeightBearing\\stanford_knee_data_jang_2013_07_08";
-			String filename = XCatDirectory + "\\VICON\\" + subject + "\\" + measurementMode + ".txt";
+//			XCatDirectory = Configuration.getGlobalConfiguration().getRegistryEntry(RegKeys.XCAT_PATH);
+//			//XCatDirectory = "D:\\Data\\WeightBearing\\stanford_knee_data_jang_2013_07_08";
+//			String filename = XCatDirectory + "\\VICON\\" + subject + "\\" + measurementMode + ".txt";
+			String filename = "D:\\Project_OpenSIM_IMUSimulation\\sIMUlation\\Bio-Sim-Toolbox\\data\\WBCT\\3MODEL_initialKnown\\Subject 5\\squat 2.txt";
 			fileMarkers = new File(filename);
 						
 			// create BufferedReader to read txt file
@@ -242,6 +243,13 @@ public class ViconMarkerBuilder implements Serializable  {
 	public int colNoRPATZ(){
 		return colNoRPATZ;
 	}
+	
+	public static void main(String[] args) {
+		ViconMarkerBuilder vmb = new ViconMarkerBuilder();
+		int a = vmb.getColNoRKneeAngleX();
+		System.out.println(a);
+	}	
+	
 }
 /*
  * Copyright (C) 2010-2014 Jang Hwan Choi

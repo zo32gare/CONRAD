@@ -156,6 +156,9 @@ public abstract class XCatScene extends AnalyticPhantom4D {
 	 */
 	public static HashMap <String, Integer> getSplinePriorityLUT(){
 		HashMap<String, Integer> map = new HashMap<String, Integer>();
+		// JENNY
+		map.put("**Sphere", 20);
+		map.put("**Sphere2", 20);
 		map.put("*****BODY******", 0);
 		map.put("**RightArm", 0);
 		map.put("**LeftArm", 0);
@@ -891,6 +894,8 @@ public abstract class XCatScene extends AnalyticPhantom4D {
 	 */
 	public static HashMap <String, String> getSplineNameMaterialNameLUT(){
 		HashMap<String, String> map = new HashMap<String, String>();
+		map.put("**Sphere", "Skull Bone");
+		map.put("**Sphere2", "Skull Bone");
 		map.put("*****BODY******", "Body (water)");
 		map.put("**RightArm", "Body (water)");
 		map.put("**LeftArm", "Body (water)");
